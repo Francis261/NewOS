@@ -43,3 +43,5 @@ xorriso -indev dist/newos-full.iso -report_el_torito plain
 ```
 
 This should show El Torito boot catalog entries, confirming CD boot metadata is present.
+
+If you build using `tools/build-immediate-iso.sh` or `tools/build-full-webos-iso.sh`, those scripts now print size and El Torito metadata automatically after ISO creation.

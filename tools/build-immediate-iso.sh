@@ -56,3 +56,16 @@ grub-mkrescue -o "$OUT" "$WORK" >/tmp/grub-mkrescue.log 2>&1
 
 echo "Built ISO: $OUT"
 ls -lh "$OUT"
+
+SIZE_BYTES=$(stat -c%s "$OUT")
+echo "ISO size (bytes): $SIZE_BYTES"
+
+if command -v xorriso >/dev/null 2>&1; then
+  echo "El Torito boot catalog:"
+  xorriso -indev "$OUT" -report_el_torito plain | sed 's/^/  /'
+fi
+
+if [[ "$SIZE_BYTES" -lt 4000000 ]]; then
+  echo "WARNING: ISO is very small (<4MB)." >&2
+  echo "This can still be valid for the immediate build (kernel+initramfs sanity image)." >&2
+fi

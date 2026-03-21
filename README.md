@@ -134,6 +134,7 @@ What it does:
 Output:
 
 - `dist/newos-full.iso`
+- Console output includes ISO byte size and El Torito boot metadata report.
 
 This is the one intended to boot directly into the full WebOS UI.
 
@@ -146,6 +147,7 @@ For a fast sanity boot (kernel + GRUB + initramfs shell), run:
 ```
 
 This creates `dist/newos-immediate.iso` immediately. It is bootable and useful for validating ISO/GRUB pipeline quickly.
+The script prints ISO byte size and El Torito boot metadata, which helps confirm emulator-visible CD boot records.
 For the **full Chromium WebOS desktop boot**, follow the Buildroot flow in section 10.
 
 ## 10) Build and package ISO

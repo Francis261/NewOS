@@ -99,3 +99,16 @@ grub-mkrescue -o "$OUT_ISO" "$ISO_DIR"
 
 echo "Full WebOS ISO built at: $OUT_ISO"
 ls -lh "$OUT_ISO"
+
+SIZE_BYTES=$(stat -c%s "$OUT_ISO")
+echo "ISO size (bytes): $SIZE_BYTES"
+
+if command -v xorriso >/dev/null 2>&1; then
+  echo "El Torito boot catalog:"
+  xorriso -indev "$OUT_ISO" -report_el_torito plain | sed 's/^/  /'
+fi
+
+if [[ "$SIZE_BYTES" -lt 250000000 ]]; then
+  echo "WARNING: Full ISO is smaller than expected (<250MB)." >&2
+  echo "Verify Chromium/Xorg/live packages were installed into the image." >&2
+fi
