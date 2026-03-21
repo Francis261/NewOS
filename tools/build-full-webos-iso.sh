@@ -67,8 +67,43 @@ RestartSec=2
 WantedBy=multi-user.target
 UNIT
 
-chroot "$CHROOT" /bin/bash -lc 'npm config set strict-ssl false && cd /opt/webos/backend && npm install --omit=dev'
-chroot "$CHROOT" /bin/bash -lc 'npm config set strict-ssl false && cd /opt/webos/tauri/frontend && npm install && npm run build'
+chroot "$CHROOT" /bin/bash -lc '
+set -euo pipefail
+npm config set strict-ssl false
+npm config set fund false
+npm config set audit false
+npm config set update-notifier false
+for i in 1 2 3; do
+  (cd /opt/webos/backend && npm install --omit=dev --no-audit --no-fund) && break
+  echo "backend npm install failed (attempt $i/3), retrying..."
+  npm cache verify || true
+  npm cache clean --force || true
+  sleep 2
+  if [[ "$i" -eq 3 ]]; then
+    echo "backend npm install failed after retries" >&2
+    exit 1
+  fi
+done
+'
+
+chroot "$CHROOT" /bin/bash -lc '
+set -euo pipefail
+npm config set strict-ssl false
+npm config set fund false
+npm config set audit false
+npm config set update-notifier false
+for i in 1 2 3; do
+  (cd /opt/webos/tauri/frontend && npm install --no-audit --no-fund && npm run build) && break
+  echo "tauri frontend npm build failed (attempt $i/3), retrying..."
+  npm cache verify || true
+  npm cache clean --force || true
+  sleep 2
+  if [[ "$i" -eq 3 ]]; then
+    echo "tauri frontend npm build failed after retries" >&2
+    exit 1
+  fi
+done
+'
 chroot "$CHROOT" /bin/bash -lc 'cd /opt/webos/tauri && cargo build --release'
 
 
