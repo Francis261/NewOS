@@ -11,6 +11,8 @@ CHROOT="$WORKDIR/chroot"
 ISO_DIR="$WORKDIR/iso"
 DEBIAN_RELEASE=${DEBIAN_RELEASE:-bookworm}
 MIRROR=${MIRROR:-http://deb.debian.org/debian}
+SQUASHFS_COMP=${SQUASHFS_COMP:-gzip}
+SQUASHFS_BLOCK_SIZE=${SQUASHFS_BLOCK_SIZE:-1M}
 
 mkdir -p "$WORKDIR" "$ISO_DIR" "$(dirname "$OUT_ISO")"
 
@@ -79,7 +81,7 @@ cp "$CHROOT/boot/vmlinuz-$KVER" "$ISO_DIR/boot/vmlinuz"
 cp "$CHROOT/boot/initrd.img-$KVER" "$ISO_DIR/boot/initrd"
 cp "$ROOT_DIR/iso/boot/grub/splash.png" "$ISO_DIR/boot/grub/splash.png"
 
-mksquashfs "$CHROOT" "$ISO_DIR/live/filesystem.squashfs" -comp xz -b 1M \
+mksquashfs "$CHROOT" "$ISO_DIR/live/filesystem.squashfs" -comp "$SQUASHFS_COMP" -b "$SQUASHFS_BLOCK_SIZE" \
   -e boot tmp var/cache/apt var/lib/apt/lists
 
 cat > "$ISO_DIR/boot/grub/grub.cfg" <<'GRUB'
