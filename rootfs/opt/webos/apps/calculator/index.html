@@ -1,0 +1,15 @@
+<!doctype html><html><body>
+<div class="app-shell">
+  <h3>Calculator</h3>
+  <input id="expr" placeholder="2 + 2 * 10" style="width:100%"/>
+  <button id="run">Compute</button>
+  <pre id="out"></pre>
+</div>
+<script>
+document.getElementById('run').onclick=()=>{
+ const expr=document.getElementById('expr').value;
+ try { document.getElementById('out').textContent=String(Function(`"use strict";return (${expr})`)()); }
+ catch(e){ document.getElementById('out').textContent=e.message; }
+};
+</script>
+</body></html>
