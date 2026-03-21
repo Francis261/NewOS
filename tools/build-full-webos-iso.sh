@@ -87,10 +87,9 @@ mksquashfs "$CHROOT" "$ISO_DIR/live/filesystem.squashfs" -comp "$SQUASHFS_COMP" 
 cat > "$ISO_DIR/boot/grub/grub.cfg" <<'GRUB'
 set default=0
 set timeout=0
-if background_image /boot/grub/splash.png; then
-  set color_normal=white/black
-  set color_highlight=black/light-gray
-fi
+terminal_output console
+set menu_color_normal=white/black
+set menu_color_highlight=black/light-gray
 menuentry "NewOS Full WebOS" {
   linux /boot/vmlinuz boot=live components quiet splash noeject
   initrd /boot/initrd

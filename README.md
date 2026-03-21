@@ -195,8 +195,12 @@ If Limbo shows:
 
 - `Booting from Floppy...`
 - `GRUB error: attempt to read or write outside of disk 'fd0'`
+- `error: no video mode activated.`
 
-then the ISO was attached as a **floppy disk** (`fd0`) instead of a **CD-ROM** (`hdc`/`sr0`).
+then either:
+
+- the ISO was attached as a **floppy disk** (`fd0`) instead of a **CD-ROM** (`hdc`/`sr0`), or
+- GRUB attempted splash/gfx mode that Limbo VGA did not support.
 
 Use these Limbo settings:
 

@@ -10,6 +10,13 @@ If you see this in Limbo:
 
 the VM is booting from a floppy device (`fd0`) instead of the ISO CD-ROM.
 
+If you see:
+
+- `error: no video mode activated.`
+
+this usually comes from GRUB gfx/splash initialization in limited VGA emulation.
+Newer NewOS builds force `terminal_output console` in GRUB to avoid this Limbo failure mode.
+
 ## Correct Limbo VM profile
 
 - Architecture: `x86_64`

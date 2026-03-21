@@ -42,10 +42,9 @@ cp iso/boot/grub/splash.png "$WORK/boot/grub/splash.png"
 cat > "$WORK/boot/grub/grub.cfg" <<'CFG'
 set default=0
 set timeout=0
-if background_image /boot/grub/splash.png; then
-  set color_normal=white/black
-  set color_highlight=black/light-gray
-fi
+terminal_output console
+set menu_color_normal=white/black
+set menu_color_highlight=black/light-gray
 menuentry "NewOS Immediate Boot" {
     linux /boot/vmlinuz quiet loglevel=3
     initrd /boot/initrd
