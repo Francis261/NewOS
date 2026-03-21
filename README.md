@@ -173,6 +173,7 @@ The script places kernel/initrd into an ISO tree and generates `webos.iso`.
 ## 11) Test in QEMU
 
 See `docs/qemu.md`.
+For Android Limbo setup/troubleshooting, see `docs/limbo.md`.
 
 Quick example:
 
@@ -185,6 +186,37 @@ qemu-system-x86_64 \
   -enable-kvm \
   -vga virtio
 ```
+
+## 11.1) Test in Limbo (Android)
+
+If Limbo shows:
+
+- `Booting from Floppy...`
+- `GRUB error: attempt to read or write outside of disk 'fd0'`
+
+then the ISO was attached as a **floppy disk** (`fd0`) instead of a **CD-ROM** (`hdc`/`sr0`).
+
+Use these Limbo settings:
+
+- **Load Machine**: New
+- **Architecture**: x86_64
+- **Machine Type**: pc (i440fx)
+- **CPU Model**: qemu64 (or kvm64 if supported)
+- **RAM**: 1024 MB minimum (2048 MB recommended for full ISO)
+- **CPU Cores**: 2
+- **VGA Display**: std
+- **CD-ROM / ISO image**: select `newos-full.iso` (or `newos-immediate.iso`)
+- **Hard Disk A**: None (optional)
+- **Floppy A**: None (**important**)
+- **Boot from device**: CD-ROM
+- **Network**: User
+
+Tips:
+
+1. Prefer `dist/newos-full.iso` for the full Chromium desktop experience.
+2. `dist/newos-immediate.iso` is intentionally small and only boots to an initramfs shell for quick sanity checks.
+3. If you changed settings, stop VM fully and cold boot again.
+4. If Limbo still boots from floppy, create a new Limbo profile and set CD-ROM first before attaching any other media.
 
 ## 12) Add a new app
 
@@ -202,4 +234,3 @@ Minimal manifest:
   "height": "420px"
 }
 ```
-
