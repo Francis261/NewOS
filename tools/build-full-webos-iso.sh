@@ -63,7 +63,7 @@ RestartSec=2
 WantedBy=multi-user.target
 UNIT
 
-chroot "$CHROOT" /bin/bash -lc 'cd /opt/webos/backend && npm install --omit=dev'
+chroot "$CHROOT" /bin/bash -lc 'npm config set strict-ssl false && cd /opt/webos/backend && npm install --omit=dev'
 
 
 chroot "$CHROOT" /bin/bash -lc 'systemctl enable webos-kiosk.service'
