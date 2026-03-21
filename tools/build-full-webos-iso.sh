@@ -21,6 +21,16 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+MOUNTED=()
+cleanup_mounts() {
+  for mp in "${MOUNTED[@]}"; do
+    if mountpoint -q "$mp"; then
+      umount "$mp" || true
+    fi
+  done
+}
+trap cleanup_mounts EXIT
+
 apt-get update
 apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-common mtools rsync
 
@@ -29,6 +39,23 @@ if [[ ! -d "$CHROOT" ]]; then
 fi
 
 cp /etc/resolv.conf "$CHROOT/etc/resolv.conf"
+
+for mp in proc sys dev; do
+  mkdir -p "$CHROOT/$mp"
+done
+
+if ! mountpoint -q "$CHROOT/proc"; then
+  mount -t proc proc "$CHROOT/proc"
+  MOUNTED+=("$CHROOT/proc")
+fi
+if ! mountpoint -q "$CHROOT/sys"; then
+  mount --bind /sys "$CHROOT/sys"
+  MOUNTED+=("$CHROOT/sys")
+fi
+if ! mountpoint -q "$CHROOT/dev"; then
+  mount --bind /dev "$CHROOT/dev"
+  MOUNTED+=("$CHROOT/dev")
+fi
 
 cat > "$CHROOT/tmp/install-packages.sh" <<'INNER'
 #!/usr/bin/env bash
