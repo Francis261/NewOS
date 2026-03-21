@@ -16,6 +16,8 @@ jobs:
   build-full-iso:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -38,3 +40,12 @@ jobs:
           path: dist/newos-full.iso
           if-no-files-found: error
           retention-days: 7
+
+      - name: Publish ISO as release asset (.iso)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: full-iso-${{ github.run_id }}
+          name: NewOS Full ISO (run ${{ github.run_number }})
+          files: dist/newos-full.iso
+          draft: false
+          prerelease: true
