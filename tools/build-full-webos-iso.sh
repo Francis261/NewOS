@@ -37,7 +37,9 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends \
   systemd-sysv live-boot linux-image-amd64 initramfs-tools \
-  xserver-xorg xinit openbox chromium nodejs npm dbus-x11 \
+  xserver-xorg xinit openbox nodejs npm dbus-x11 \
+  libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 \
+  rustc cargo \
   ca-certificates sudo locales curl
 apt-get clean
 INNER
@@ -66,6 +68,8 @@ WantedBy=multi-user.target
 UNIT
 
 chroot "$CHROOT" /bin/bash -lc 'npm config set strict-ssl false && cd /opt/webos/backend && npm install --omit=dev'
+chroot "$CHROOT" /bin/bash -lc 'npm config set strict-ssl false && cd /opt/webos/tauri/frontend && npm install && npm run build'
+chroot "$CHROOT" /bin/bash -lc 'cd /opt/webos/tauri && cargo build --release'
 
 
 chroot "$CHROOT" /bin/bash -lc 'systemctl enable webos-kiosk.service'

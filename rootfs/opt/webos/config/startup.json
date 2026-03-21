@@ -1,0 +1,11 @@
+{
+  "fullscreen": true,
+  "disableWindowResize": true,
+  "startupApps": ["files", "browser"],
+  "shortcuts": {
+    "toggleFullscreen": "F11",
+    "launcher": "Meta",
+    "terminal": "Ctrl+Alt+T",
+    "closeWindow": "Alt+F4"
+  }
+}

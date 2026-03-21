@@ -17,25 +17,11 @@ node server.js >/var/log/webos-backend.log 2>&1 &
 
 sleep 1
 
-CHROMIUM_BIN="$(command -v chromium-browser || true)"
-if [ -z "$CHROMIUM_BIN" ]; then
-  CHROMIUM_BIN="$(command -v chromium || true)"
-fi
-if [ -z "$CHROMIUM_BIN" ]; then
-  echo "Chromium binary not found (expected chromium-browser or chromium)" >&2
+TAURI_BIN="${TAURI_BIN:-/opt/webos/tauri/target/release/webos-shell}"
+if [ ! -x "$TAURI_BIN" ]; then
+  echo "Tauri shell binary not found at $TAURI_BIN" >&2
+  echo "Build it with: cd /opt/webos/tauri && cargo tauri build" >&2
   exit 1
 fi
 
-exec "$CHROMIUM_BIN" \
-  --kiosk \
-  --no-first-run \
-  --disable-session-crashed-bubble \
-  --disable-translate \
-  --disable-features=TranslateUI,BackForwardCache,AutofillServerCommunication \
-  --disable-background-networking \
-  --disable-sync \
-  --disk-cache-size=10485760 \
-  --media-cache-size=10485760 \
-  --process-per-site \
-  --overscroll-history-navigation=0 \
-  http://127.0.0.1:8080/index.html
+exec "$TAURI_BIN"

@@ -41,8 +41,9 @@ This repository provides a complete starter implementation for a **bootable Web 
 
 - Base: Buildroot minimal image (recommended for low RAM footprint).
 - Init system launches `/etc/init.d/S99webos`.
-- `S99webos` starts Xorg and launches Chromium kiosk mode.
-- Chromium opens `http://127.0.0.1:8080/index.html` served by local Node backend.
+- `S99webos` starts Xorg and launches the Tauri shell (`webos-shell`).
+- Tauri hosts the React desktop frontend and talks to local backend APIs.
+- Backend serves local app data and storage APIs.
 
 ## 3) GRUB bootloader config
 
@@ -176,6 +177,7 @@ The script places kernel/initrd into an ISO tree and generates `webos.iso`.
 
 See `docs/qemu.md`.
 For Android Limbo setup/troubleshooting, see `docs/limbo.md`.
+For Tauri integration + bootable Linux instructions, see `docs/tauri-webos.md`.
 
 Quick example:
 
