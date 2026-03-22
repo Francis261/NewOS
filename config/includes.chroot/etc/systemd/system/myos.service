@@ -1,0 +1,19 @@
+[Unit]
+Description=MyOS graphical shell bootstrap
+After=systemd-user-sessions.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=myos
+Group=myos
+Environment=HOME=/home/myos
+Environment=DISPLAY=:0
+ExecStart=/opt/myos/start.sh
+Restart=always
+RestartSec=2
+TTYPath=/dev/tty1
+StandardInput=tty
+
+[Install]
+WantedBy=multi-user.target

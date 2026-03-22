@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cat > /etc/profile.d/myos.sh <<'ENV'
+export MYOS_KIOSK_LOCKDOWN=${MYOS_KIOSK_LOCKDOWN:-1}
+ENV
+chmod 0644 /etc/profile.d/myos.sh
+chmod +x /opt/myos/start.sh /opt/myos/launch-ui.sh

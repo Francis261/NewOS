@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-chmod +x /opt/myos/start.sh /opt/myos/launch-ui.sh
-chown -R myos:myos /opt/myos

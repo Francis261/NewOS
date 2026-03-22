@@ -1,2 +1,10 @@
 dist/*.iso
 *.log
+
+# live-build artifacts
+.cache/
+.chroot/
+bootstrap.cache/
+chroot/
+cache/
+live-image-*.iso

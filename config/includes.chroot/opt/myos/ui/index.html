@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyOS Desktop</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="desktop"></div>
+  <aside id="launcher" class="panel hidden">
+    <h3>Launcher</h3>
+    <button data-app="browser">Browser</button>
+    <button data-app="files">File Manager</button>
+    <button data-app="terminal">Terminal</button>
+    <button data-app="python">Run Python</button>
+  </aside>
+  <footer id="taskbar">
+    <button id="toggle-launcher">☰</button>
+    <button data-app="browser">Browser</button>
+    <button data-app="files">Files</button>
+    <button data-app="terminal">Terminal</button>
+  </footer>
+  <script src="./desktop.js"></script>
+</body>
+</html>

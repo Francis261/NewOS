@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! id -u myos >/dev/null 2>&1; then
+  useradd -m -s /bin/bash -G audio,video,netdev,sudo myos
+fi
+
+echo 'myos:myos' | chpasswd
+mkdir -p /home/myos/.config
+chown -R myos:myos /home/myos /opt/myos
