@@ -47,7 +47,7 @@ This repository is a **live-boot/live-build** project for producing a desktop li
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y live-build debootstrap debian-archive-keyring xorriso squashfs-tools
+sudo apt-get install -y live-build debootstrap debian-archive-keyring xorriso squashfs-tools isolinux syslinux syslinux-common mtools
 ```
 
 ## 4) Build commands

@@ -27,6 +27,10 @@ jobs:
             xorriso \
             squashfs-tools \
             syslinux-utils \
+            isolinux \
+            syslinux \
+            syslinux-common \
+            mtools \
             qemu-system-x86 \
             ovmf
 
