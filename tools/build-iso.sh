@@ -20,29 +20,7 @@ if [[ ! -f /usr/share/keyrings/debian-archive-keyring.gpg ]]; then
 fi
 
 cd "$ROOT_DIR"
-
-prepare_isolinux_assets() {
-  local iso_dir="/root/isolinux"
-  mkdir -p "$iso_dir"
-
-  if [[ ! -f "$iso_dir/isolinux.bin" ]]; then
-    local iso_bin
-    iso_bin=$(dpkg -L isolinux 2>/dev/null | rg '/isolinux\.bin$' -m1 || true)
-    if [[ -n "$iso_bin" && -f "$iso_bin" ]]; then
-      cp -f "$iso_bin" "$iso_dir/isolinux.bin"
-    fi
-  fi
-
-  if [[ ! -f "$iso_dir/vesamenu.c32" ]]; then
-    local menu_bin
-    menu_bin=$(dpkg -L syslinux-common 2>/dev/null | rg '/vesamenu\.c32$' -m1 || true)
-    if [[ -n "$menu_bin" && -f "$menu_bin" ]]; then
-      cp -f "$menu_bin" "$iso_dir/vesamenu.c32"
-    fi
-  fi
-}
-
-prepare_isolinux_assets
+./tools/prepare-isolinux-assets.sh
 
 lb clean --purge || true
 ./config/auto/config

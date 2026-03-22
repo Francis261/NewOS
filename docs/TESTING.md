@@ -5,7 +5,7 @@
 2. Run smoke checks:
    - `./tools/test-iso.sh dist/myos-live.iso`
 3. (CI path) Validate direct live-build output too:
-   - `sudo lb clean --purge && sudo ./config/auto/config && sudo lb build`
+   - `sudo lb clean --purge && sudo ./tools/prepare-isolinux-assets.sh && sudo ./config/auto/config && sudo lb build`
    - `./tools/test-iso.sh live-image-amd64.hybrid.iso`
 4. Boot in VM and verify:
    - auto-login to `myos`

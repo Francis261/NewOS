@@ -27,6 +27,7 @@ This repository is a **live-boot/live-build** project for producing a desktop li
 │   │   └── 030-env.hook.chroot
 │   └── includes.binary/boot/grub/grub.cfg
 ├── tools/build-iso.sh
+├── tools/prepare-isolinux-assets.sh
 ├── tools/test-iso.sh
 └── dist/myos-live.iso (generated)
 ```
@@ -56,6 +57,7 @@ sudo apt-get install -y live-build debootstrap debian-archive-keyring xorriso sq
 
 ```bash
 sudo lb clean --purge
+sudo ./tools/prepare-isolinux-assets.sh
 sudo ./config/auto/config
 sudo lb build
 ```

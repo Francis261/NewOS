@@ -39,6 +39,9 @@ jobs:
           ! grep -qi 'chromium' config/includes.chroot/opt/myos/launch-ui.sh
           grep -q '/opt/myos/bin/myos-shell' config/includes.chroot/opt/myos/launch-ui.sh
 
+      - name: Prepare isolinux assets
+        run: sudo ./tools/prepare-isolinux-assets.sh
+
       - name: Build live ISO with wrapper
         run: sudo ./tools/build-iso.sh
 
