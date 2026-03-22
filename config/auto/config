@@ -14,7 +14,7 @@ lb config noauto \
   --parent-mirror-chroot https://deb.debian.org/debian \
   --mirror-bootstrap https://deb.debian.org/debian \
   --mirror-chroot https://deb.debian.org/debian \
-  --mirror-chroot-security https://security.debian.org/debian-security \
+  --security false \
   --binary-images iso-hybrid \
   --debian-installer false \
   --apt-recommends false \
