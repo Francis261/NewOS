@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 OUT_DIR="$ROOT_DIR/dist"
-TMP_BINARY_DIR="$ROOT_DIR/.myos-binary-tmp"
 mkdir -p "$OUT_DIR"
 
 if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
@@ -16,30 +15,11 @@ if ! command -v lb >/dev/null 2>&1; then
   exit 1
 fi
 
+if [[ ! -f /usr/share/keyrings/debian-archive-keyring.gpg ]]; then
+  echo "Warning: debian-archive-keyring not found; install it to avoid signature warnings." >&2
+fi
+
 cd "$ROOT_DIR"
-
-cleanup() {
-  if [[ -d "$TMP_BINARY_DIR" ]]; then
-    mkdir -p config/binary
-    cp -a "$TMP_BINARY_DIR"/. config/binary/
-    rm -rf "$TMP_BINARY_DIR"
-  fi
-}
-trap cleanup EXIT
-
-# Keep requested repository layout (config/binary) but stage assets where live-build expects them.
-if [[ -d config/binary ]]; then
-  rm -rf "$TMP_BINARY_DIR"
-  mkdir -p "$TMP_BINARY_DIR"
-  cp -a config/binary/. "$TMP_BINARY_DIR"/
-  rm -rf config/binary
-fi
-
-rm -rf config/includes.binary
-mkdir -p config/includes.binary
-if [[ -d "$TMP_BINARY_DIR" ]]; then
-  cp -a "$TMP_BINARY_DIR"/. config/includes.binary/
-fi
 
 lb clean --purge || true
 ./config/auto/config

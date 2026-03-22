@@ -1,11 +1,12 @@
 # MyOS live-boot build system (Debian live-build)
 
-This repository is now a clean, **live-boot/live-build** project for producing a lightweight Web OS ISO.
+This repository is a **live-boot/live-build** project for producing a desktop live ISO that launches a Tauri shell.
 
 ## 1) Layout
 
 ```text
 .
+├── .github/workflows/build-live-iso.yml
 ├── config/
 │   ├── auto/config
 │   ├── package-lists/myos.list.chroot
@@ -15,6 +16,7 @@ This repository is now a clean, **live-boot/live-build** project for producing a
 │   │   └── opt/myos/
 │   │       ├── start.sh
 │   │       ├── launch-ui.sh
+│   │       ├── bin/myos-shell
 │   │       └── ui/
 │   │           ├── index.html
 │   │           ├── styles.css
@@ -23,29 +25,28 @@ This repository is now a clean, **live-boot/live-build** project for producing a
 │   │   ├── 010-users.hook.chroot
 │   │   ├── 020-services.hook.chroot
 │   │   └── 030-env.hook.chroot
-│   └── binary/boot/grub/grub.cfg
+│   └── includes.binary/boot/grub/grub.cfg
 ├── tools/build-iso.sh
+├── tools/test-iso.sh
 └── dist/myos-live.iso (generated)
 ```
-
-Desktop payload is stored under `/opt/myos/` in the live image.
 
 ## 2) Features
 
 - Debian stable (Bookworm) live ISO.
-- Minimal Xorg + Openbox desktop session.
+- Minimal Xorg + Openbox session.
 - Auto-login user `myos` on tty1.
-- `myos.service` starts X and launches kiosk shell.
-- Tauri-first boot path (`/opt/myos/bin/myos-shell` if present).
-- Chromium kiosk fallback for the included React-style desktop.
+- `myos.service` starts X and launches a Tauri shell entrypoint.
+- `myos-shell` wrapper resolves packaged app locations (`/opt/myos/tauri/myos-shell`, etc).
 - Persistence boot menu entry.
 - Optional installer-mode boot menu entry.
+- GitHub Actions workflow that builds with wrapper + direct `lb build`, runs smoke tests for both outputs, and uploads artifacts.
 
 ## 3) Build prerequisites
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y live-build debootstrap xorriso squashfs-tools
+sudo apt-get install -y live-build debootstrap debian-archive-keyring xorriso squashfs-tools
 ```
 
 ## 4) Build commands
@@ -67,40 +68,26 @@ sudo ./tools/build-iso.sh
 Output:
 
 - `dist/myos-live.iso`
+- `dist/myos-live-lb.iso` (from direct `lb build` path in CI)
 
-## 5) Boot test
+## 5) ISO smoke test
 
-### VirtualBox
+```bash
+./tools/test-iso.sh dist/myos-live.iso
+```
 
-1. Create VM: Debian (64-bit), 2+ CPU, 4GB RAM.
-2. Attach `dist/myos-live.iso`.
-3. Boot and confirm:
-   - auto-login to `myos`
-   - desktop launches automatically
-   - launcher/taskbar/window apps respond
-
-### QEMU
+## 6) QEMU boot test
 
 ```bash
 qemu-system-x86_64 -m 4096 -smp 2 -enable-kvm -cdrom dist/myos-live.iso
 ```
 
-## 6) Tauri integration
+## 7) Tauri integration
 
-Put your packaged Tauri shell at:
+Put your packaged Tauri shell at one of:
 
-- `/opt/myos/bin/myos-shell`
+- `/opt/myos/tauri/myos-shell` (preferred)
+- `/opt/myos/tauri/MyOS`
+- `/usr/local/bin/myos-shell`
 
-Then boot will prefer it over Chromium fallback.
-
-## 7) Extra app concepts
-
-The included UI demonstrates:
-
-- Taskbar + launcher
-- Virtual windows
-- Browser app via iframe
-- File-manager placeholder for Tauri backend APIs
-- Terminal placeholder for xterm.js bridge
-- Python runner placeholder
-
+The boot path now avoids browser kiosk mode entirely.

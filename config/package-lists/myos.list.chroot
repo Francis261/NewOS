@@ -8,6 +8,7 @@ xorg
 xinit
 openbox
 x11-xserver-utils
+xterm
 
 # required tooling
 nodejs
@@ -15,10 +16,6 @@ npm
 python3
 curl
 git
-
-# kiosk browser + optional terminal/browser utilities
-chromium
-xterm
 
 # tauri runtime libraries
 libglib2.0-0

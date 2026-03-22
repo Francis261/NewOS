@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TAURI_CANDIDATES=(
+  "/opt/myos/tauri/myos-shell"
+  "/opt/myos/tauri/MyOS"
+  "/usr/local/bin/myos-shell"
+)
+
+for candidate in "${TAURI_CANDIDATES[@]}"; do
+  if [[ -x "$candidate" ]]; then
+    exec "$candidate" "$@"
+  fi
+done
+
+echo "Tauri shell binary not found." >&2
+echo "Place your packaged Tauri app at /opt/myos/tauri/myos-shell (or /usr/local/bin/myos-shell)." >&2
+exec xterm -hold -e "echo 'Tauri shell missing'; echo 'Expected /opt/myos/tauri/myos-shell'; bash"

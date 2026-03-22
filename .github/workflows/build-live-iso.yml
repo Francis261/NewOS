@@ -1,0 +1,61 @@
+name: Build MyOS Live ISO
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-live-iso:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            live-build \
+            debootstrap \
+            debian-archive-keyring \
+            xorriso \
+            squashfs-tools \
+            syslinux-utils \
+            qemu-system-x86 \
+            ovmf
+
+      - name: Verify Tauri-only launcher (no kiosk fallback)
+        run: |
+          ! grep -qi 'chromium' config/includes.chroot/opt/myos/launch-ui.sh
+          grep -q '/opt/myos/bin/myos-shell' config/includes.chroot/opt/myos/launch-ui.sh
+
+      - name: Build live ISO with wrapper
+        run: sudo ./tools/build-iso.sh
+
+      - name: Run smoke checks on wrapper ISO
+        run: ./tools/test-iso.sh dist/myos-live.iso
+
+      - name: Build live ISO directly with lb
+        run: |
+          sudo lb clean --purge
+          sudo ./config/auto/config
+          sudo lb build
+          sudo cp -f live-image-amd64.hybrid.iso dist/myos-live-lb.iso
+
+      - name: Run smoke checks on direct lb ISO
+        run: ./tools/test-iso.sh dist/myos-live-lb.iso
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myos-live-iso
+          path: |
+            dist/myos-live.iso
+            dist/myos-live-lb.iso
+            live-image-amd64.hybrid.iso

@@ -4,24 +4,17 @@ set -euo pipefail
 ROOT_DIR=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$ROOT_DIR"
 
-# Support requested repo layout using config/binary while satisfying live-build internals.
-if [[ -d config/binary ]]; then
-  rm -rf config/includes.binary
-  mkdir -p config/includes.binary
-  cp -a config/binary/. config/includes.binary/
-fi
-
 lb config noauto \
   --mode debian \
   --distribution bookworm \
   --parent-distribution bookworm \
   --architectures amd64 \
   --archive-areas "main contrib non-free non-free-firmware" \
-  --parent-mirror-bootstrap http://deb.debian.org/debian \
-  --parent-mirror-chroot http://deb.debian.org/debian \
-  --mirror-bootstrap http://deb.debian.org/debian \
-  --mirror-chroot http://deb.debian.org/debian \
-  --mirror-chroot-security http://security.debian.org/debian-security \
+  --parent-mirror-bootstrap https://deb.debian.org/debian \
+  --parent-mirror-chroot https://deb.debian.org/debian \
+  --mirror-bootstrap https://deb.debian.org/debian \
+  --mirror-chroot https://deb.debian.org/debian \
+  --mirror-chroot-security https://security.debian.org/debian-security \
   --binary-images iso-hybrid \
   --debian-installer false \
   --apt-recommends false \

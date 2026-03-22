@@ -1,11 +1,15 @@
 # ISO validation checklist
 
-1. Boot `dist/myos-live.iso` in VM.
-2. Verify automatic login as `myos`.
-3. Verify `myos.service` active:
-   - `systemctl status myos.service`
-4. Verify desktop autostarts and taskbar buttons open windows.
-5. Verify Chromium fallback path (if no `/opt/myos/bin/myos-shell`).
+1. Build `dist/myos-live.iso`:
+   - `sudo ./tools/build-iso.sh`
+2. Run smoke checks:
+   - `./tools/test-iso.sh dist/myos-live.iso`
+3. (CI path) Validate direct live-build output too:
+   - `sudo lb clean --purge && sudo ./config/auto/config && sudo lb build`
+   - `./tools/test-iso.sh live-image-amd64.hybrid.iso`
+4. Boot in VM and verify:
+   - auto-login to `myos`
+   - `systemctl status myos.service` shows active
+   - Tauri shell launches from `/opt/myos/bin/myos-shell`
+5. If shell is missing, verify fallback xterm message appears with guidance.
 6. Verify persistence mode by booting **MyOS Live (Persistence)** and mounting a persistence partition labeled `persistence`.
-7. Optional hardening toggle:
-   - set `MYOS_KIOSK_LOCKDOWN=0` to reduce kiosk restrictions.
