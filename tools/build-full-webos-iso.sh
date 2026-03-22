@@ -66,7 +66,8 @@ apt-get install -y --no-install-recommends \
   systemd-sysv live-boot linux-image-amd64 initramfs-tools \
   xserver-xorg xinit openbox nodejs npm dbus-x11 \
   libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 \
-  build-essential gcc libc6-dev pkg-config \
+  libwebkit2gtk-4.1-dev libgtk-3-dev libglib2.0-dev libayatana-appindicator3-dev \
+  build-essential gcc g++ libc6-dev pkg-config \
   ca-certificates sudo locales curl
 apt-get clean
 INNER
