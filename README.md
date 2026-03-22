@@ -1,205 +1,93 @@
-# NewOS: Bootable Offline Web OS
+# MyOS live-boot build system (Debian live-build)
 
-This repository provides a complete starter implementation for a **bootable Web OS** that launches directly into a local HTML/CSS/JS desktop environment in Chromium kiosk mode.
+This repository is a **live-boot/live-build** project for producing a desktop live ISO that launches a Tauri shell.
 
-## 1) Folder structure
+## 1) Layout
 
 ```text
 .
-├── buildroot-overlay/
-│   └── etc/
-│       ├── init.d/S99webos
-│       └── profile.d/webos-env.sh
-├── iso/
-│   └── boot/grub/
-│       ├── grub.cfg
-│       └── splash.png
-├── rootfs/opt/webos/
-│   ├── apps/
-│   │   ├── calculator/
-│   │   ├── file-manager/
-│   │   ├── notes/
-│   │   └── settings/
-│   ├── assets/splash.png
-│   ├── backend/
-│   │   ├── package.json
-│   │   └── server.js
-│   ├── boot/grub.cfg
-│   ├── data/
-│   ├── frontend/
-│   │   ├── desktop.js
-│   │   ├── index.html
-│   │   ├── styles.css
-│   │   └── webos-api.js
-│   └── scripts/
-│       ├── build-iso.sh
-│       └── start-webos.sh
-└── docs/qemu.md
+├── .github/workflows/build-live-iso.yml
+├── config/
+│   ├── auto/config
+│   ├── package-lists/myos.list.chroot
+│   ├── includes.chroot/
+│   │   ├── etc/systemd/system/myos.service
+│   │   ├── etc/systemd/system/getty@tty1.service.d/autologin.conf
+│   │   └── opt/myos/
+│   │       ├── start.sh
+│   │       ├── launch-ui.sh
+│   │       ├── bin/myos-shell
+│   │       └── ui/
+│   │           ├── index.html
+│   │           ├── styles.css
+│   │           └── desktop.js
+│   ├── hooks/live/
+│   │   ├── 010-users.hook.chroot
+│   │   ├── 020-services.hook.chroot
+│   │   └── 030-env.hook.chroot
+│   └── includes.binary/boot/grub/grub.cfg
+├── tools/build-iso.sh
+├── tools/test-iso.sh
+└── dist/myos-live.iso (generated)
 ```
 
-## 2) Base OS + autostart flow
+## 2) Features
 
-- Base: Buildroot minimal image (recommended for low RAM footprint).
-- Init system launches `/etc/init.d/S99webos`.
-- `S99webos` starts Xorg and launches Chromium kiosk mode.
-- Chromium opens `http://127.0.0.1:8080/index.html` served by local Node backend.
+- Debian stable (Bookworm) live ISO.
+- Minimal Xorg + Openbox session.
+- Auto-login user `myos` on tty1.
+- `myos.service` starts X and launches a Tauri shell entrypoint.
+- `myos-shell` wrapper resolves packaged app locations (`/opt/myos/tauri/myos-shell`, etc).
+- Persistence boot menu entry.
+- Optional installer-mode boot menu entry.
+- GitHub Actions workflow that builds with wrapper + direct `lb build`, runs smoke tests for both outputs, and uploads artifacts.
 
-## 3) GRUB bootloader config
-
-Use `iso/boot/grub/grub.cfg`:
-
-- `timeout=0` for hidden menu.
-- auto-load `vmlinuz` and `initrd`.
-- optional splash image (`splash.png`).
-
-## 4) Local web desktop
-
-Desktop UI components:
-
-- Dock with dynamic app discovery (`/api/apps`)
-- Window manager with draggable app windows
-- Sandboxed iframes per app
-- Built-in apps: calculator, notes, file manager, settings (+ wasm test)
-
-## 5) Local app system (`/apps`)
-
-Each app folder requires:
-
-- `manifest.json`
-- `index.html` (plus optional JS/CSS/WASM assets)
-
-Runtime behavior:
-
-1. Desktop fetches manifests from `/api/apps`.
-2. Launch creates a sandboxed iframe: `allow-scripts allow-forms`.
-3. App requests a session token via `/api/session`.
-4. File APIs require token (`X-WebOS-Token`) and are scoped to `/opt/webos/data/apps/<appId>`.
-
-### Security guarantees
-
-- Path traversal prevention via canonical path validation.
-- App IDs must match strict regex.
-- No raw filesystem paths exposed to apps.
-- App sandboxed from top-level DOM and peer app storage.
-
-## 6) Filesystem model
-
-- Global user data: `/opt/webos/data/shared`
-- App private data: `/opt/webos/data/apps/<appId>`
-- File manager app uses scoped API for create/list/delete.
-
-## 7) Networking and offline behavior
-
-- Fully local by default (localhost backend + local assets).
-- Works without internet after first boot.
-- Optional cloud sync toggle in Settings app (stub hook).
-
-## 8) WASM / AI extension support
-
-`WebOS.runWasm(...)` in `frontend/webos-api.js` allows apps to instantiate local WASM binaries.
-
-To add local AI inference:
-
-- ship `*.wasm` model runtime in app folder,
-- load with `fetch('/apps/<appId>/model.wasm')`,
-- execute in app sandbox.
-
-## 9) Performance profile (2GB RAM target)
-
-Chromium launch optimizations in `start-webos.sh`:
-
-- `--disable-background-networking`
-- `--disable-sync`
-- reduced disk/media cache sizes
-- no first run/UI extras
-- per-site process model
-
-
-
-## Full Chromium kiosk ISO (production path)
-
-Use this script to produce a **full live ISO** that boots directly into Chromium kiosk and runs the WebOS desktop:
+## 3) Build prerequisites
 
 ```bash
-sudo ./tools/build-full-webos-iso.sh
+sudo apt-get update
+sudo apt-get install -y live-build debootstrap debian-archive-keyring xorriso squashfs-tools
 ```
 
-What it does:
+## 4) Build commands
 
-1. Creates a Debian live rootfs with `live-boot`, Linux kernel, Xorg, Openbox, Chromium, Node.js.
-2. Copies `rootfs/opt/webos` into `/opt/webos` inside the image.
-3. Enables `webos-kiosk.service` to run `xinit /opt/webos/scripts/start-webos.sh` on boot.
-4. Builds `filesystem.squashfs`, kernel/initrd, and packages everything with GRUB.
+### A) Manual
+
+```bash
+sudo lb clean --purge
+sudo ./config/auto/config
+sudo lb build
+```
+
+### B) Wrapper (recommended)
+
+```bash
+sudo ./tools/build-iso.sh
+```
 
 Output:
 
-- `dist/newos-full.iso`
+- `dist/myos-live.iso`
+- `dist/myos-live-lb.iso` (from direct `lb build` path in CI)
 
-This is the one intended to boot directly into the full WebOS UI.
-
-## Quick immediate ISO (built artifact)
-
-For a fast sanity boot (kernel + GRUB + initramfs shell), run:
+## 5) ISO smoke test
 
 ```bash
-./tools/build-immediate-iso.sh
+./tools/test-iso.sh dist/myos-live.iso
 ```
 
-This creates `dist/newos-immediate.iso` immediately. It is bootable and useful for validating ISO/GRUB pipeline quickly.
-For the **full Chromium WebOS desktop boot**, follow the Buildroot flow in section 10.
-
-## 10) Build and package ISO
-
-### A. Build Buildroot image
-
-1. Configure Buildroot with:
-   - Linux kernel
-   - initramfs / initrd image
-   - Xorg + chromium + nodejs + npm + xinit
-2. Add this repo's `buildroot-overlay/` as **Root filesystem overlay**.
-3. Copy `rootfs/opt/webos` into target rootfs (`/opt/webos`).
-
-### B. Generate boot ISO
-
-On host system with `grub-mkrescue`:
+## 6) QEMU boot test
 
 ```bash
-# from within target runtime or after mounting rootfs layout
-/opt/webos/scripts/build-iso.sh /path/to/bzImage /path/to/initrd webos.iso
+qemu-system-x86_64 -m 4096 -smp 2 -enable-kvm -cdrom dist/myos-live.iso
 ```
 
-The script places kernel/initrd into an ISO tree and generates `webos.iso`.
+## 7) Tauri integration
 
-## 11) Test in QEMU
+Put your packaged Tauri shell at one of:
 
-See `docs/qemu.md`.
+- `/opt/myos/tauri/myos-shell` (preferred)
+- `/opt/myos/tauri/MyOS`
+- `/usr/local/bin/myos-shell`
 
-Quick example:
-
-```bash
-qemu-system-x86_64 \
-  -m 2048 \
-  -smp 2 \
-  -cdrom webos.iso \
-  -boot d \
-  -enable-kvm \
-  -vga virtio
-```
-
-## 12) Add a new app
-
-1. Create `rootfs/opt/webos/apps/my-app/manifest.json`.
-2. Add `index.html` (+ optional JS/CSS/WASM).
-3. Launch WebOS and click **Refresh Apps**.
-
-Minimal manifest:
-
-```json
-{
-  "name": "My App",
-  "description": "A local app",
-  "width": "600px",
-  "height": "420px"
-}
-```
-
+The boot path now avoids browser kiosk mode entirely.

@@ -1,0 +1,12 @@
+:root { --bg:#0f172a; --panel:#111827; --fg:#e5e7eb; --accent:#2563eb; }
+* { box-sizing:border-box; font-family:system-ui,sans-serif; }
+body { margin:0; background:var(--bg); color:var(--fg); overflow:hidden; }
+#desktop { position:fixed; inset:0 0 46px 0; padding:10px; }
+#taskbar { position:fixed; left:0; right:0; bottom:0; height:46px; background:var(--panel); display:flex; gap:8px; align-items:center; padding:6px; }
+button { border:0; border-radius:6px; background:#1f2937; color:var(--fg); padding:8px 10px; cursor:pointer; }
+#launcher { position:fixed; left:8px; bottom:54px; width:220px; background:var(--panel); border:1px solid #374151; border-radius:10px; padding:10px; }
+#launcher.hidden { display:none; }
+#launcher button { display:block; width:100%; margin-top:8px; text-align:left; }
+.window { position:absolute; width:580px; height:360px; background:#020617; border:1px solid #334155; border-radius:10px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.45); }
+.window header { height:36px; background:#0b1220; display:flex; align-items:center; justify-content:space-between; padding:0 10px; cursor:move; }
+.window iframe,.window pre { width:100%; height:calc(100% - 36px); border:0; margin:0; }
