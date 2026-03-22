@@ -4,18 +4,12 @@ set -euo pipefail
 ISO_DIR=${1:-/root/isolinux}
 mkdir -p "$ISO_DIR"
 
-find_asset() {
-  local pattern=$1
-  local pkg=$2
+find_from_dpkg() {
+  local pkg=$1
+  local suffix=$2
   local path
 
-  path=$(dpkg -L "$pkg" 2>/dev/null | rg "$pattern" -m1 || true)
-  if [[ -n "$path" && -f "$path" ]]; then
-    printf '%s\n' "$path"
-    return 0
-  fi
-
-  path=$(find /usr/lib -type f | rg "$pattern" -m1 || true)
+  path=$(dpkg -L "$pkg" 2>/dev/null | grep -E "${suffix}$" | head -n1 || true)
   if [[ -n "$path" && -f "$path" ]]; then
     printf '%s\n' "$path"
     return 0
@@ -24,8 +18,21 @@ find_asset() {
   return 1
 }
 
-iso_bin=$(find_asset '/isolinux\.bin$' isolinux || true)
-menu_bin=$(find_asset '/vesamenu\.c32$' syslinux-common || true)
+find_from_fs() {
+  local filename=$1
+  local path
+
+  path=$(find /usr/lib -type f -name "$filename" -print -quit 2>/dev/null || true)
+  if [[ -n "$path" && -f "$path" ]]; then
+    printf '%s\n' "$path"
+    return 0
+  fi
+
+  return 1
+}
+
+iso_bin=$(find_from_dpkg isolinux '/isolinux\.bin' || find_from_fs isolinux.bin || true)
+menu_bin=$(find_from_dpkg syslinux-common '/vesamenu\.c32' || find_from_fs vesamenu.c32 || true)
 
 if [[ -z "$iso_bin" ]]; then
   echo "isolinux.bin not found (install package: isolinux)" >&2
