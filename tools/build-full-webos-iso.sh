@@ -66,7 +66,7 @@ apt-get install -y --no-install-recommends \
   systemd-sysv live-boot linux-image-amd64 initramfs-tools \
   xserver-xorg xinit openbox nodejs npm dbus-x11 \
   libwebkit2gtk-4.1-0 libgtk-3-0 libayatana-appindicator3-1 \
-  build-essential pkg-config \
+  build-essential gcc libc6-dev pkg-config \
   ca-certificates sudo locales curl
 apt-get clean
 INNER
@@ -140,6 +140,13 @@ fi
 rustup toolchain install stable --profile minimal
 rustup default stable
 cd /opt/webos/tauri
+if ! command -v gcc >/dev/null 2>&1; then
+  echo "gcc not found; cannot compile Rust dependencies" >&2
+  exit 1
+fi
+export CC=gcc
+export CXX=g++
+export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=gcc
 cargo build --release
 '
 
