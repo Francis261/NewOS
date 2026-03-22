@@ -40,7 +40,10 @@ jobs:
           grep -q '/opt/myos/bin/myos-shell' config/includes.chroot/opt/myos/launch-ui.sh
 
       - name: Prepare isolinux assets
-        run: sudo ./tools/prepare-isolinux-assets.sh
+        run: |
+          sudo ./tools/prepare-isolinux-assets.sh
+          sudo test -f /root/isolinux/isolinux.bin
+          sudo test -f /root/isolinux/vesamenu.c32
 
       - name: Build live ISO with wrapper
         run: sudo ./tools/build-iso.sh
@@ -51,6 +54,7 @@ jobs:
       - name: Build live ISO directly with lb
         run: |
           sudo lb clean --purge
+          sudo ./tools/prepare-isolinux-assets.sh
           sudo ./config/auto/config
           sudo lb build
           sudo cp -f live-image-amd64.hybrid.iso dist/myos-live-lb.iso
