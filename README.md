@@ -41,6 +41,7 @@ This repository is a **live-boot/live-build** project for producing a desktop li
 - Persistence boot menu entry.
 - Optional installer-mode boot menu entry.
 - GitHub Actions workflow that builds with wrapper + direct `lb build`, runs smoke tests for both outputs, and uploads artifacts.
+- Live-build is pinned to `linux-image-amd64` to avoid legacy Contents index lookups that can fail on modern mirrors.
 
 ## 3) Build prerequisites
 
