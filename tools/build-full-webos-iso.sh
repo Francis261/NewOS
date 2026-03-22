@@ -146,11 +146,7 @@ if ! command -v gcc >/dev/null 2>&1; then
 fi
 export CC=gcc
 export CXX=g++
-HOST_TRIPLE=$(rustc -vV | awk '/^host:/ {print $2}')
-TARGET_ENV=${HOST_TRIPLE^^}
-TARGET_ENV=${TARGET_ENV//[-.]/_}
-LINKER_VAR="CARGO_TARGET_${TARGET_ENV}_LINKER"
-export "${LINKER_VAR}=gcc"
+export RUSTFLAGS="${RUSTFLAGS:-} -C linker=gcc"
 cargo build --release
 '
 
