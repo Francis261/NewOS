@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! id -u myos >/dev/null 2>&1; then
+  useradd -m -s /bin/bash -G audio,video,netdev,sudo myos
+fi
+
+echo 'myos:myos' | chpasswd
+usermod -aG input myos || true
+mkdir -p /home/myos/.config/openbox
+chown -R myos:myos /home/myos /opt/myos

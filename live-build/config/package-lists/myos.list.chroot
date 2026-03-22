@@ -1,0 +1,32 @@
+# Core live system
+live-boot
+live-config
+systemd-sysv
+
+# Display stack
+xorg
+xinit
+openbox
+x11-xserver-utils
+xterm
+
+# Browser/runtime
+chromium
+
+# Build/runtime tools requested
+nodejs
+npm
+python3
+python3-venv
+curl
+git
+
+# Tauri native deps
+libglib2.0-0
+libgtk-3-0
+libwebkit2gtk-4.1-0
+libayatana-appindicator3-1
+
+# Helpful extras
+ca-certificates
+network-manager

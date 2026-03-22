@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+systemctl enable myos.service
+systemctl enable NetworkManager.service
+
+install -d -m 0755 /etc/systemd/system/getty.target.wants

@@ -242,3 +242,16 @@ Minimal manifest:
   "height": "420px"
 }
 ```
+
+## Debian live-build system (recommended for lightweight WebOS)
+
+A complete `live-build` configuration is available under `live-build/config`.
+
+Quick start:
+
+```bash
+sudo apt-get install -y live-build debootstrap xorriso squashfs-tools
+./tools/build-live-iso.sh
+```
+
+See `docs/live-build.md` for full structure, hooks, autologin/service setup, persistence menu, and VM testing steps.
