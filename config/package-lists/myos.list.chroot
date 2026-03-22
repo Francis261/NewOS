@@ -1,3 +1,6 @@
+# kernel (explicitly installed; live-build kernel auto-step disabled)
+linux-image-amd64
+
 # live-boot base
 live-boot
 live-config

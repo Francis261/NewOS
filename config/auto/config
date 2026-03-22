@@ -17,7 +17,7 @@ lb config noauto \
   --security false \
   --binary-images iso-hybrid \
   --debian-installer false \
-  --linux-packages "linux-image-amd64" \
+  --linux-packages "none" \
   --apt-recommends false \
   --apt-indices false \
   --cache true \
